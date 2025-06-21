@@ -10,7 +10,7 @@ import AdminBatches from './pages/AdminBatches';
 import AdminNotes from './pages/AdminNotes';
 import AdminChat from './pages/AdminChat';
 import StudentChat from './pages/StudentChat';
-//import UserContext from './context/UserContext'; // ✅ FIXED
+import AdminEvaluation from './pages/AdminEvaluation';
 
 function App() {
   return (
@@ -26,10 +26,10 @@ function App() {
         <Route path="/admin/batch/:batchName/notes/new" element={<AdminNotes />} />
         <Route path="/admin/batch/:batchId/chat" element={<AdminChat />} />
         <Route path="/student/chat/:type/:module" element={<StudentChat />} />
+        <Route path="/admin/batch/:batchName/evaluate/:title" element={<AdminEvaluation />} />
       </Routes>
     </Router>
   );
 }
-
 
 export default App;

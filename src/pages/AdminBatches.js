@@ -67,6 +67,7 @@ function AdminBatches() {
                 <p>Quiz: <a href={note.quizlink}>{note.quizlink}</a></p>
                 <p>Assignment: <a href={note.assignmentlink}>{note.assignmentlink}</a></p>
                 <button onClick={() => handleEdit(note)}>Edit</button>
+                <button onClick={() => navigate(`/admin/batch/${batchName}/evaluate/${note.title}`)}>Evaluate</button>
               </div>
             )}
           </li>

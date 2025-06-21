@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import UserContext from '../context/UserContext';
 import axios from 'axios';
+import UserContext from '../context/UserContext';
 
 function StudentModule() {
   const { name } = useParams();
   const { userData } = useContext(UserContext);
   const [notes, setNotes] = useState([]);
   const navigate = useNavigate();
+  const [answerFiles, setAnswerFiles] = useState({});
 
   useEffect(() => {
     if (!userData) return;
@@ -16,6 +17,16 @@ function StudentModule() {
       .then(res => setNotes(res.data))
       .catch(err => console.error('Error fetching notes:', err));
   }, [name, userData]);
+
+  const uploadAnswer = async (note) => {
+    const file = answerFiles[note._id];
+    if (!file) return alert('Please choose a PDF file');
+
+    const formData = new FormData();
+    formData.append('file', file);
+    await axios.post(`http://localhost:5003/notes/upload/${userData.batch}/${name}/${note.title}/${userData.name}`, formData);
+    alert('Answer uploaded');
+  };
 
   if (!userData) return <p>Loading...</p>;
 
@@ -28,7 +39,15 @@ function StudentModule() {
             <h4>{note.title}</h4>
             <p>Meet: <a href={note.meetlink}>{note.meetlink}</a></p>
             <p>Quiz: <a href={note.quizlink}>{note.quizlink}</a></p>
-            <p>Assignment: <a href={note.assignmentlink}>{note.assignmentlink}</a></p>
+            <p>
+              Assignment: <a href={note.assignmentlink} target="_blank" rel="noreferrer">View</a><br />
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={e => setAnswerFiles({ ...answerFiles, [note._id]: e.target.files[0] })}
+              />
+              <button onClick={() => uploadAnswer(note)}>Upload Answer</button>
+            </p>
           </li>
         ))}
       </ul>

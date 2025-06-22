@@ -9,6 +9,7 @@ function AdminBatches() {
   const [notes, setNotes] = useState([]);
   const [editId, setEditId] = useState(null);
   const [editedNote, setEditedNote] = useState({});
+  const [uploadFile, setUploadFile] = useState(null); // new state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +29,28 @@ function AdminBatches() {
     setNotes(res.data);
   };
 
+  const handleAssignmentUpload = async () => {
+    if (!uploadFile || !editedNote.title) {
+      alert("Select a file and ensure title is filled");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', uploadFile);
+
+    try {
+      const res = await axios.post(
+        `http://localhost:5003/upload-assignment?batch=${batchName}&module=${userData.domain}&title=${encodeURIComponent(editedNote.title)}`,
+        formData
+      );
+      alert("✅ Uploaded");
+      setEditedNote(prev => ({ ...prev, assignmentlink: res.data.url }));
+    } catch (err) {
+      console.error(err);
+      alert("❌ Upload failed");
+    }
+  };
+
   const handleChat = () => {
     navigate(`/admin/batch/${batchName}/chat`);
   };
@@ -44,20 +67,31 @@ function AdminBatches() {
               <div>
                 <input
                   value={editedNote.title}
+                  placeholder="Title"
                   onChange={e => setEditedNote({ ...editedNote, title: e.target.value })}
                 />
                 <input
                   value={editedNote.meetlink}
+                  placeholder="Meet Link"
                   onChange={e => setEditedNote({ ...editedNote, meetlink: e.target.value })}
                 />
                 <input
                   value={editedNote.quizlink}
+                  placeholder="Quiz Link"
                   onChange={e => setEditedNote({ ...editedNote, quizlink: e.target.value })}
                 />
                 <input
                   value={editedNote.assignmentlink}
+                  placeholder="Assignment Link (auto-set after upload)"
                   onChange={e => setEditedNote({ ...editedNote, assignmentlink: e.target.value })}
                 />
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={e => setUploadFile(e.target.files[0])}
+                />
+                <button onClick={handleAssignmentUpload}>Upload Assignment PDF</button>
+                <br />
                 <button onClick={handleSave}>Save</button>
               </div>
             ) : (
@@ -65,7 +99,7 @@ function AdminBatches() {
                 <h4>{note.title}</h4>
                 <p>Meet: <a href={note.meetlink}>{note.meetlink}</a></p>
                 <p>Quiz: <a href={note.quizlink}>{note.quizlink}</a></p>
-                <p>Assignment: <a href={note.assignmentlink}>{note.assignmentlink}</a></p>
+                <p>Assignment: <a href={note.assignmentlink} target="_blank" rel="noreferrer">View</a></p>
                 <button onClick={() => handleEdit(note)}>Edit</button>
                 <button onClick={() => navigate(`/admin/batch/${batchName}/evaluate/${note.title}`)}>Evaluate</button>
               </div>

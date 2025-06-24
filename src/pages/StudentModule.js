@@ -4,7 +4,7 @@ import axios from 'axios';
 import UserContext from '../context/UserContext';
 
 export default function StudentModule() {
-  const { name } = useParams();
+  const { name } = useParams(); // module name
   const { userData } = useContext(UserContext);
   const [notes, setNotes] = useState([]);
   const navigate = useNavigate();

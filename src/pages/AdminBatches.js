@@ -9,7 +9,7 @@ function AdminBatches() {
   const [notes, setNotes] = useState([]);
   const [editId, setEditId] = useState(null);
   const [editedNote, setEditedNote] = useState({});
-  const [uploadFile, setUploadFile] = useState(null); // new state
+  const [uploadFile, setUploadFile] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,8 +43,12 @@ function AdminBatches() {
         `http://localhost:5003/upload-assignment?batch=${batchName}&module=${userData.domain}&title=${encodeURIComponent(editedNote.title)}`,
         formData
       );
-      alert("✅ Uploaded");
-      setEditedNote(prev => ({ ...prev, assignmentlink: res.data.url }));
+
+      const assignmentlink = res.data.s3Url;
+
+      setEditedNote(prev => ({ ...prev, assignmentlink }));
+
+      alert("✅ Uploaded to S3");
     } catch (err) {
       console.error(err);
       alert("❌ Upload failed");
@@ -82,8 +86,8 @@ function AdminBatches() {
                 />
                 <input
                   value={editedNote.assignmentlink}
-                  placeholder="Assignment Link (auto-set after upload)"
-                  onChange={e => setEditedNote({ ...editedNote, assignmentlink: e.target.value })}
+                  placeholder="Assignment Link"
+                  readOnly
                 />
                 <input
                   type="file"
